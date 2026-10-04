@@ -1,0 +1,650 @@
+{
+  "tool": "sla-breach-check",
+  "version": "1.0.0",
+  "input": {
+    "paths": [
+      "examples/breaching"
+    ],
+    "files": [
+      {
+        "file": "examples/breaching/phone.json",
+        "format": "json",
+        "tickets": 3
+      },
+      {
+        "file": "examples/breaching/tickets.csv",
+        "format": "csv",
+        "tickets": 12
+      }
+    ]
+  },
+  "asOf": "3001-03-10T15:00:00+01:00",
+  "config": {
+    "file": "examples/sla.json",
+    "name": "Juniper Desk support SLA",
+    "priorities": [
+      {
+        "name": "urgent",
+        "firstResponse": "30m",
+        "resolution": "4h",
+        "cover": "24x7",
+        "aliases": [
+          "P1"
+        ]
+      },
+      {
+        "name": "high",
+        "firstResponse": "1h",
+        "resolution": "8h",
+        "cover": "business",
+        "aliases": [
+          "P2"
+        ]
+      },
+      {
+        "name": "normal",
+        "firstResponse": "4h",
+        "resolution": "24h",
+        "cover": "business",
+        "aliases": [
+          "P3"
+        ]
+      },
+      {
+        "name": "low",
+        "firstResponse": "8h",
+        "resolution": "40h",
+        "cover": "business",
+        "aliases": [
+          "P4"
+        ]
+      }
+    ],
+    "timezone": "+01:00",
+    "workingDays": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri"
+    ],
+    "workingHours": [
+      "09:00-12:30",
+      "13:30-17:30"
+    ],
+    "holidays": [
+      "3001-03-05"
+    ],
+    "defaultOffset": null,
+    "fields": {
+      "id": "id",
+      "priority": "priority",
+      "created": "created",
+      "firstResponse": "first_response",
+      "resolved": "resolved",
+      "paused": "paused",
+      "history": "history"
+    },
+    "pausedStatuses": [
+      "pending",
+      "waiting on customer"
+    ],
+    "pausedClocks": [
+      "resolution"
+    ],
+    "warnAt": 80,
+    "files": [
+      "**/*.csv",
+      "**/*.json"
+    ],
+    "exclude": [],
+    "minSeverity": "notice",
+    "rules": [
+      {
+        "id": "first-response-missed",
+        "key": "firstResponseMissed",
+        "level": "error",
+        "rule": "a ticket whose cover time from creation to first response, with paused time taken out when pausedClocks names firstResponse, is longer than the firstResponse target of its priority"
+      },
+      {
+        "id": "resolution-missed",
+        "key": "resolutionMissed",
+        "level": "error",
+        "rule": "a resolved ticket whose cover time from creation to resolution, with paused time taken out when pausedClocks names resolution, is longer than the resolution target of its priority"
+      },
+      {
+        "id": "first-response-overdue",
+        "key": "firstResponseOverdue",
+        "level": "error",
+        "rule": "an open ticket with no first response whose cover time from creation up to --as-of is longer than the firstResponse target of its priority"
+      },
+      {
+        "id": "resolution-overdue",
+        "key": "resolutionOverdue",
+        "level": "error",
+        "rule": "an open ticket whose cover time from creation up to --as-of is longer than the resolution target of its priority"
+      },
+      {
+        "id": "first-response-at-risk",
+        "key": "firstResponseAtRisk",
+        "level": "warning",
+        "rule": "an open ticket with no first response that has used 80% or more of the firstResponse target of its priority by --as-of, and not more than all of it"
+      },
+      {
+        "id": "resolution-at-risk",
+        "key": "resolutionAtRisk",
+        "level": "warning",
+        "rule": "an open ticket that has used 80% or more of the resolution target of its priority by --as-of, and not more than all of it"
+      },
+      {
+        "id": "invalid-timestamp",
+        "key": "invalidTimestamp",
+        "level": "error",
+        "rule": "a ticket with no creation time, or with a creation, first response, resolution, pause or status time that is not an RFC 3339 timestamp with Z or an offset"
+      },
+      {
+        "id": "timestamps-out-of-order",
+        "key": "timestampsOutOfOrder",
+        "level": "error",
+        "rule": "a ticket with a first response, a resolution or a pause before its creation, a pause that ends before it starts, or a time after --as-of"
+      },
+      {
+        "id": "unknown-priority",
+        "key": "unknownPriority",
+        "level": "error",
+        "rule": "a ticket with no priority, or with a priority that is neither a priority of the configuration nor one of its aliases"
+      },
+      {
+        "id": "duplicate-ticket",
+        "key": "duplicateTicket",
+        "level": "error",
+        "rule": "a ticket with no id, or with an id that a ticket read before it already has, in the same file or in another"
+      }
+    ]
+  },
+  "summary": {
+    "tickets": 15,
+    "resolved": 11,
+    "open": 4,
+    "notJudged": 5,
+    "withPauses": 2,
+    "priorities": [
+      {
+        "name": "urgent",
+        "cover": "24x7",
+        "tickets": 2,
+        "firstResponse": {
+          "target": "30m",
+          "targetSeconds": 1800,
+          "tickets": 2,
+          "met": 1,
+          "missed": 1,
+          "open": 0,
+          "atRisk": 0,
+          "share": 0.5,
+          "medianSeconds": 1200,
+          "p90Seconds": 3300
+        },
+        "resolution": {
+          "target": "4h",
+          "targetSeconds": 14400,
+          "tickets": 2,
+          "met": 2,
+          "missed": 0,
+          "open": 0,
+          "atRisk": 0,
+          "share": 1,
+          "medianSeconds": 9000,
+          "p90Seconds": 12600
+        }
+      },
+      {
+        "name": "high",
+        "cover": "business",
+        "tickets": 4,
+        "firstResponse": {
+          "target": "1h",
+          "targetSeconds": 3600,
+          "tickets": 4,
+          "met": 1,
+          "missed": 2,
+          "open": 1,
+          "atRisk": 1,
+          "share": 0.3333333333333333,
+          "medianSeconds": 3600,
+          "p90Seconds": 4200
+        },
+        "resolution": {
+          "target": "8h",
+          "targetSeconds": 28800,
+          "tickets": 4,
+          "met": 1,
+          "missed": 1,
+          "open": 2,
+          "atRisk": 0,
+          "share": 0.5,
+          "medianSeconds": 10800,
+          "p90Seconds": 36600
+        }
+      },
+      {
+        "name": "normal",
+        "cover": "business",
+        "tickets": 3,
+        "firstResponse": {
+          "target": "4h",
+          "targetSeconds": 14400,
+          "tickets": 3,
+          "met": 3,
+          "missed": 0,
+          "open": 0,
+          "atRisk": 0,
+          "share": 1,
+          "medianSeconds": 3600,
+          "p90Seconds": 13500
+        },
+        "resolution": {
+          "target": "24h",
+          "targetSeconds": 86400,
+          "tickets": 3,
+          "met": 2,
+          "missed": 0,
+          "open": 1,
+          "atRisk": 1,
+          "share": 1,
+          "medianSeconds": 34200,
+          "p90Seconds": 57600
+        }
+      },
+      {
+        "name": "low",
+        "cover": "business",
+        "tickets": 1,
+        "firstResponse": {
+          "target": "8h",
+          "targetSeconds": 28800,
+          "tickets": 1,
+          "met": 1,
+          "missed": 0,
+          "open": 0,
+          "atRisk": 0,
+          "share": 1,
+          "medianSeconds": 3600,
+          "p90Seconds": 3600
+        },
+        "resolution": {
+          "target": "40h",
+          "targetSeconds": 144000,
+          "tickets": 1,
+          "met": 0,
+          "missed": 1,
+          "open": 0,
+          "atRisk": 0,
+          "share": 0,
+          "medianSeconds": null,
+          "p90Seconds": null
+        }
+      }
+    ]
+  },
+  "findings": [
+    {
+      "rule": "first-response-missed",
+      "level": "error",
+      "file": "examples/breaching/phone.json",
+      "line": 15,
+      "column": null,
+      "at": "examples/breaching/phone.json:15",
+      "ticket": "JD-302",
+      "priority": "high",
+      "found": "ticket JD-302 (high): the first response came after 1h 10m of cover time, 10m past the target of 1h",
+      "clock": "firstResponse",
+      "usedSeconds": 4200,
+      "targetSeconds": 3600,
+      "pausedSeconds": 0,
+      "basis": [
+        {
+          "text": "an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target",
+          "source": "Set up SLA goals (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/"
+        },
+        {
+          "text": "an SLA calendar has a time zone, working days, one or more time slots per day such as a morning and an afternoon around lunch, and holidays, and only that time is counted",
+          "source": "Set up SLA calendars (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-calendars/"
+        },
+        {
+          "text": "an SLO is a target value for a measured level of service, and an SLA is an agreement with users that says what happens when the objectives in it are missed",
+          "source": "Service Level Objectives (Site Reliability Engineering, Google)",
+          "url": "https://sre.google/sre-book/service-level-objectives/"
+        }
+      ],
+      "own": "a time equal to the target meets it; a ticket resolved with no first response is measured up to its resolution, which is then its first response"
+    },
+    {
+      "rule": "invalid-timestamp",
+      "level": "error",
+      "file": "examples/breaching/phone.json",
+      "line": 23,
+      "column": null,
+      "at": "examples/breaching/phone.json:23",
+      "ticket": "JD-303",
+      "priority": "urgent",
+      "found": "ticket JD-303: resolved \"3001-02-30T10:00:00+01:00\" names a date that does not exist",
+      "clock": null,
+      "usedSeconds": null,
+      "targetSeconds": null,
+      "pausedSeconds": null,
+      "basis": [
+        {
+          "text": "a timestamp carries Z or an offset from UTC, because a local time with no offset is read wrongly in most of the world",
+          "source": "RFC 3339, Date and Time on the Internet: Timestamps",
+          "url": "https://www.rfc-editor.org/rfc/rfc3339"
+        }
+      ],
+      "own": "a timestamp with no offset is refused unless defaultOffset is set, seconds may be left out and a space may stand for the T; a ticket with a timestamp the tool cannot read is not judged against any target"
+    },
+    {
+      "rule": "first-response-missed",
+      "level": "error",
+      "file": "examples/breaching/tickets.csv",
+      "line": 2,
+      "column": null,
+      "at": "examples/breaching/tickets.csv:2",
+      "ticket": "JD-201",
+      "priority": "urgent",
+      "found": "ticket JD-201 (urgent): the first response came after 55m of cover time, 25m past the target of 30m",
+      "clock": "firstResponse",
+      "usedSeconds": 3300,
+      "targetSeconds": 1800,
+      "pausedSeconds": 0,
+      "basis": [
+        {
+          "text": "an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target",
+          "source": "Set up SLA goals (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/"
+        },
+        {
+          "text": "an SLA calendar has a time zone, working days, one or more time slots per day such as a morning and an afternoon around lunch, and holidays, and only that time is counted",
+          "source": "Set up SLA calendars (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-calendars/"
+        },
+        {
+          "text": "an SLO is a target value for a measured level of service, and an SLA is an agreement with users that says what happens when the objectives in it are missed",
+          "source": "Service Level Objectives (Site Reliability Engineering, Google)",
+          "url": "https://sre.google/sre-book/service-level-objectives/"
+        }
+      ],
+      "own": "a time equal to the target meets it; a ticket resolved with no first response is measured up to its resolution, which is then its first response"
+    },
+    {
+      "rule": "resolution-missed",
+      "level": "error",
+      "file": "examples/breaching/tickets.csv",
+      "line": 3,
+      "column": null,
+      "at": "examples/breaching/tickets.csv:3",
+      "ticket": "JD-202",
+      "priority": "high",
+      "found": "ticket JD-202 (high): resolved after 10h 10m of cover time, 2h 10m past the target of 8h",
+      "clock": "resolution",
+      "usedSeconds": 36600,
+      "targetSeconds": 28800,
+      "pausedSeconds": 0,
+      "basis": [
+        {
+          "text": "an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target",
+          "source": "Set up SLA goals (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/"
+        },
+        {
+          "text": "an SLA starts, pauses and stops counting on conditions of its own, so the time a request spends in a paused state is not counted",
+          "source": "Set up SLA conditions (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-conditions/"
+        },
+        {
+          "text": "an SLO is a target value for a measured level of service, and an SLA is an agreement with users that says what happens when the objectives in it are missed",
+          "source": "Service Level Objectives (Site Reliability Engineering, Google)",
+          "url": "https://sre.google/sre-book/service-level-objectives/"
+        }
+      ],
+      "own": "a time equal to the target meets it; paused time comes out of the resolution clock by default and out of the first response clock only when pausedClocks names it"
+    },
+    {
+      "rule": "resolution-overdue",
+      "level": "error",
+      "file": "examples/breaching/tickets.csv",
+      "line": 5,
+      "column": null,
+      "at": "examples/breaching/tickets.csv:5",
+      "ticket": "JD-204",
+      "priority": "low",
+      "found": "ticket JD-204 (low) is not resolved after 41h 30m of cover time up to --as-of, 1h 30m past the target of 40h",
+      "clock": "resolution",
+      "usedSeconds": 149400,
+      "targetSeconds": 144000,
+      "pausedSeconds": 0,
+      "basis": [
+        {
+          "text": "an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target",
+          "source": "Set up SLA goals (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/"
+        },
+        {
+          "text": "an SLA calendar has a time zone, working days, one or more time slots per day such as a morning and an afternoon around lunch, and holidays, and only that time is counted",
+          "source": "Set up SLA calendars (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-calendars/"
+        }
+      ],
+      "own": "the time of an open ticket is counted up to --as-of and never up to the clock of the machine; an overdue ticket counts as missed in the summary, because it can no longer meet its target"
+    },
+    {
+      "rule": "first-response-overdue",
+      "level": "error",
+      "file": "examples/breaching/tickets.csv",
+      "line": 6,
+      "column": null,
+      "at": "examples/breaching/tickets.csv:6",
+      "ticket": "JD-205",
+      "priority": "high",
+      "found": "ticket JD-205 (high) has no first response after 1h 15m of cover time up to --as-of, 15m past the target of 1h",
+      "clock": "firstResponse",
+      "usedSeconds": 4500,
+      "targetSeconds": 3600,
+      "pausedSeconds": 0,
+      "basis": [
+        {
+          "text": "an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target",
+          "source": "Set up SLA goals (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/"
+        },
+        {
+          "text": "an SLA calendar has a time zone, working days, one or more time slots per day such as a morning and an afternoon around lunch, and holidays, and only that time is counted",
+          "source": "Set up SLA calendars (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-calendars/"
+        }
+      ],
+      "own": "the time of an open ticket is counted up to --as-of and never up to the clock of the machine; an overdue ticket counts as missed in the summary, because it can no longer meet its target"
+    },
+    {
+      "rule": "unknown-priority",
+      "level": "error",
+      "file": "examples/breaching/tickets.csv",
+      "line": 8,
+      "column": null,
+      "at": "examples/breaching/tickets.csv:8",
+      "ticket": "JD-207",
+      "priority": "P5",
+      "found": "ticket JD-207: priority \"P5\" is not a priority of the SLA, which names urgent, high, normal and low",
+      "clock": null,
+      "usedSeconds": null,
+      "targetSeconds": null,
+      "pausedSeconds": null,
+      "basis": [
+        {
+          "text": "an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target",
+          "source": "Set up SLA goals (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/"
+        }
+      ],
+      "own": "priorities are compared as whole lowercase words, so \"P1 - Urgent\" and \"p1 urgent\" are one priority, and aliases name other spellings; a ticket with no target is not judged"
+    },
+    {
+      "rule": "invalid-timestamp",
+      "level": "error",
+      "file": "examples/breaching/tickets.csv",
+      "line": 9,
+      "column": null,
+      "at": "examples/breaching/tickets.csv:9",
+      "ticket": "JD-208",
+      "priority": "normal",
+      "found": "ticket JD-208: created \"3001-03-04 10:20\" has no offset; write Z or an offset such as +01:00 after the time, or set defaultOffset in the configuration",
+      "clock": null,
+      "usedSeconds": null,
+      "targetSeconds": null,
+      "pausedSeconds": null,
+      "basis": [
+        {
+          "text": "a timestamp carries Z or an offset from UTC, because a local time with no offset is read wrongly in most of the world",
+          "source": "RFC 3339, Date and Time on the Internet: Timestamps",
+          "url": "https://www.rfc-editor.org/rfc/rfc3339"
+        }
+      ],
+      "own": "a timestamp with no offset is refused unless defaultOffset is set, seconds may be left out and a space may stand for the T; a ticket with a timestamp the tool cannot read is not judged against any target"
+    },
+    {
+      "rule": "timestamps-out-of-order",
+      "level": "error",
+      "file": "examples/breaching/tickets.csv",
+      "line": 10,
+      "column": null,
+      "at": "examples/breaching/tickets.csv:10",
+      "ticket": "JD-209",
+      "priority": "low",
+      "found": "ticket JD-209: first_response \"3001-03-04T09:40:00+01:00\" is before created \"3001-03-04T10:00:00+01:00\"",
+      "clock": null,
+      "usedSeconds": null,
+      "targetSeconds": null,
+      "pausedSeconds": null,
+      "basis": [
+        {
+          "text": "a timestamp carries Z or an offset from UTC, because a local time with no offset is read wrongly in most of the world",
+          "source": "RFC 3339, Date and Time on the Internet: Timestamps",
+          "url": "https://www.rfc-editor.org/rfc/rfc3339"
+        },
+        {
+          "text": "an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target",
+          "source": "Set up SLA goals (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/"
+        }
+      ],
+      "own": "a ticket whose times cannot be in that order is not judged, rather than judged on times that are wrong; a time after --as-of means the export is newer than --as-of"
+    },
+    {
+      "rule": "duplicate-ticket",
+      "level": "error",
+      "file": "examples/breaching/tickets.csv",
+      "line": 11,
+      "column": null,
+      "at": "examples/breaching/tickets.csv:11",
+      "ticket": "JD-202",
+      "priority": null,
+      "found": "ticket JD-202 was read before, at examples/breaching/tickets.csv:3; this copy is not judged",
+      "clock": null,
+      "usedSeconds": null,
+      "targetSeconds": null,
+      "pausedSeconds": null,
+      "basis": [
+        {
+          "text": "each record is a line of fields separated by commas, every record has as many fields as the others, and a field that holds a comma, a quote or a line break is quoted with the quote doubled",
+          "source": "RFC 4180, Common Format and MIME Type for Comma-Separated Values (CSV) Files",
+          "url": "https://www.rfc-editor.org/rfc/rfc4180"
+        },
+        {
+          "text": "when an object repeats a name the behaviour of the software that reads it cannot be predicted, so the readers of this tool refuse a repeated name",
+          "source": "RFC 8259, The JSON Data Interchange Format",
+          "url": "https://www.rfc-editor.org/rfc/rfc8259"
+        }
+      ],
+      "own": "the first copy of a ticket is judged and every later copy is reported and left out, so a ticket is never counted twice in the summary"
+    },
+    {
+      "rule": "resolution-at-risk",
+      "level": "warning",
+      "file": "examples/breaching/tickets.csv",
+      "line": 7,
+      "column": null,
+      "at": "examples/breaching/tickets.csv:7",
+      "ticket": "JD-206",
+      "priority": "normal",
+      "found": "ticket JD-206 (normal) is not resolved yet: 20h of the 24h target used up to --as-of (83%), 4h left",
+      "clock": "resolution",
+      "usedSeconds": 72000,
+      "targetSeconds": 86400,
+      "pausedSeconds": 0,
+      "basis": [
+        {
+          "text": "an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target",
+          "source": "Set up SLA goals (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/"
+        },
+        {
+          "text": "an SLO is a target value for a measured level of service, and an SLA is an agreement with users that says what happens when the objectives in it are missed",
+          "source": "Service Level Objectives (Site Reliability Engineering, Google)",
+          "url": "https://sre.google/sre-book/service-level-objectives/"
+        }
+      ],
+      "own": "the share of the target that makes a ticket at risk, 80% by default, is the tool's own choice and is set with warnAt"
+    },
+    {
+      "rule": "first-response-at-risk",
+      "level": "warning",
+      "file": "examples/breaching/tickets.csv",
+      "line": 12,
+      "column": null,
+      "at": "examples/breaching/tickets.csv:12",
+      "ticket": "JD-210",
+      "priority": "high",
+      "found": "ticket JD-210 (high) has no first response yet: 55m of the 1h target used up to --as-of (91%), 5m left",
+      "clock": "firstResponse",
+      "usedSeconds": 3300,
+      "targetSeconds": 3600,
+      "pausedSeconds": 0,
+      "basis": [
+        {
+          "text": "an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target",
+          "source": "Set up SLA goals (Jira Service Management Cloud, Atlassian Support)",
+          "url": "https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/"
+        },
+        {
+          "text": "an SLO is a target value for a measured level of service, and an SLA is an agreement with users that says what happens when the objectives in it are missed",
+          "source": "Service Level Objectives (Site Reliability Engineering, Google)",
+          "url": "https://sre.google/sre-book/service-level-objectives/"
+        }
+      ],
+      "own": "the share of the target that makes a ticket at risk, 80% by default, is the tool's own choice and is set with warnAt"
+    }
+  ],
+  "totals": {
+    "findings": 12,
+    "byLevel": {
+      "error": 10,
+      "warning": 2,
+      "notice": 0
+    },
+    "hidden": 0,
+    "notListed": 0
+  },
+  "result": {
+    "pass": false,
+    "errors": 10,
+    "byLevel": {
+      "error": 10,
+      "warning": 2,
+      "notice": 0
+    },
+    "text": "FAIL - 10 errors (and 2 warnings)"
+  },
+  "notes": [],
+  "notice": "This report measures the timestamps of the ticket export it was given against the SLA of the configuration. It does not connect to a help desk, read the clock or see changes made after the export; the time of an open ticket is counted up to --as-of, inside the cover calendar (docs/limits.md)."
+}

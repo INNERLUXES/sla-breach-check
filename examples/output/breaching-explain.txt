@@ -1,0 +1,119 @@
+sla-breach-check: examples/breaching
+input: examples/breaching (2 files, 15 tickets: 11 resolved, 4 open)
+sla: examples/sla.json (Juniper Desk support SLA): first response / resolution: urgent 30m / 4h (24x7); high 1h / 8h; normal 4h / 24h; low 8h / 40h
+cover: mon, tue, wed, thu and fri, 09:00-12:30 and 13:30-17:30, at +01:00; 1 holiday (3001-03-05); paused statuses pending and waiting on customer; pauses stop the resolution clock; at risk from 80% of a target
+as of: 3001-03-10T15:00:00+01:00
+rules: first-response-missed (error); resolution-missed (error); first-response-overdue (error); resolution-overdue (error); first-response-at-risk (warning); resolution-at-risk (warning); invalid-timestamp (error); timestamps-out-of-order (error); unknown-priority (error); duplicate-ticket (error)
+findings: 12 (10 error, 2 warning)
+
+Findings (12)
+
+  ERROR    first-response-missed    examples/breaching/phone.json:15
+           ticket JD-302 (high): the first response came after 1h 10m of cover time, 10m past the target of 1h
+           rule: a ticket whose cover time from creation to first response, with paused time taken out when pausedClocks names firstResponse, is longer than the firstResponse target of its priority
+           basis: an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target (Set up SLA goals (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/)
+           basis: an SLA calendar has a time zone, working days, one or more time slots per day such as a morning and an afternoon around lunch, and holidays, and only that time is counted (Set up SLA calendars (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-calendars/)
+           basis: an SLO is a target value for a measured level of service, and an SLA is an agreement with users that says what happens when the objectives in it are missed (Service Level Objectives (Site Reliability Engineering, Google), https://sre.google/sre-book/service-level-objectives/)
+           the tool's own choice: a time equal to the target meets it; a ticket resolved with no first response is measured up to its resolution, which is then its first response
+
+  ERROR    invalid-timestamp        examples/breaching/phone.json:23
+           ticket JD-303: resolved "3001-02-30T10:00:00+01:00" names a date that does not exist
+           rule: a ticket with no creation time, or with a creation, first response, resolution, pause or status time that is not an RFC 3339 timestamp with Z or an offset
+           basis: a timestamp carries Z or an offset from UTC, because a local time with no offset is read wrongly in most of the world (RFC 3339, Date and Time on the Internet: Timestamps, https://www.rfc-editor.org/rfc/rfc3339)
+           the tool's own choice: a timestamp with no offset is refused unless defaultOffset is set, seconds may be left out and a space may stand for the T; a ticket with a timestamp the tool cannot read is not judged against any target
+
+  ERROR    first-response-missed    examples/breaching/tickets.csv:2
+           ticket JD-201 (urgent): the first response came after 55m of cover time, 25m past the target of 30m
+           rule: a ticket whose cover time from creation to first response, with paused time taken out when pausedClocks names firstResponse, is longer than the firstResponse target of its priority
+           basis: an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target (Set up SLA goals (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/)
+           basis: an SLA calendar has a time zone, working days, one or more time slots per day such as a morning and an afternoon around lunch, and holidays, and only that time is counted (Set up SLA calendars (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-calendars/)
+           basis: an SLO is a target value for a measured level of service, and an SLA is an agreement with users that says what happens when the objectives in it are missed (Service Level Objectives (Site Reliability Engineering, Google), https://sre.google/sre-book/service-level-objectives/)
+           the tool's own choice: a time equal to the target meets it; a ticket resolved with no first response is measured up to its resolution, which is then its first response
+
+  ERROR    resolution-missed        examples/breaching/tickets.csv:3
+           ticket JD-202 (high): resolved after 10h 10m of cover time, 2h 10m past the target of 8h
+           rule: a resolved ticket whose cover time from creation to resolution, with paused time taken out when pausedClocks names resolution, is longer than the resolution target of its priority
+           basis: an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target (Set up SLA goals (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/)
+           basis: an SLA starts, pauses and stops counting on conditions of its own, so the time a request spends in a paused state is not counted (Set up SLA conditions (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-conditions/)
+           basis: an SLO is a target value for a measured level of service, and an SLA is an agreement with users that says what happens when the objectives in it are missed (Service Level Objectives (Site Reliability Engineering, Google), https://sre.google/sre-book/service-level-objectives/)
+           the tool's own choice: a time equal to the target meets it; paused time comes out of the resolution clock by default and out of the first response clock only when pausedClocks names it
+
+  ERROR    resolution-overdue       examples/breaching/tickets.csv:5
+           ticket JD-204 (low) is not resolved after 41h 30m of cover time up to --as-of, 1h 30m past the target of 40h
+           rule: an open ticket whose cover time from creation up to --as-of is longer than the resolution target of its priority
+           basis: an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target (Set up SLA goals (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/)
+           basis: an SLA calendar has a time zone, working days, one or more time slots per day such as a morning and an afternoon around lunch, and holidays, and only that time is counted (Set up SLA calendars (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-calendars/)
+           the tool's own choice: the time of an open ticket is counted up to --as-of and never up to the clock of the machine; an overdue ticket counts as missed in the summary, because it can no longer meet its target
+
+  ERROR    first-response-overdue   examples/breaching/tickets.csv:6
+           ticket JD-205 (high) has no first response after 1h 15m of cover time up to --as-of, 15m past the target of 1h
+           rule: an open ticket with no first response whose cover time from creation up to --as-of is longer than the firstResponse target of its priority
+           basis: an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target (Set up SLA goals (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/)
+           basis: an SLA calendar has a time zone, working days, one or more time slots per day such as a morning and an afternoon around lunch, and holidays, and only that time is counted (Set up SLA calendars (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-calendars/)
+           the tool's own choice: the time of an open ticket is counted up to --as-of and never up to the clock of the machine; an overdue ticket counts as missed in the summary, because it can no longer meet its target
+
+  ERROR    unknown-priority         examples/breaching/tickets.csv:8
+           ticket JD-207: priority "P5" is not a priority of the SLA, which names urgent, high, normal and low
+           rule: a ticket with no priority, or with a priority that is neither a priority of the configuration nor one of its aliases
+           basis: an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target (Set up SLA goals (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/)
+           the tool's own choice: priorities are compared as whole lowercase words, so "P1 - Urgent" and "p1 urgent" are one priority, and aliases name other spellings; a ticket with no target is not judged
+
+  ERROR    invalid-timestamp        examples/breaching/tickets.csv:9
+           ticket JD-208: created "3001-03-04 10:20" has no offset; write Z or an offset such as +01:00 after the time, or set defaultOffset in the configuration
+           rule: a ticket with no creation time, or with a creation, first response, resolution, pause or status time that is not an RFC 3339 timestamp with Z or an offset
+           basis: a timestamp carries Z or an offset from UTC, because a local time with no offset is read wrongly in most of the world (RFC 3339, Date and Time on the Internet: Timestamps, https://www.rfc-editor.org/rfc/rfc3339)
+           the tool's own choice: a timestamp with no offset is refused unless defaultOffset is set, seconds may be left out and a space may stand for the T; a ticket with a timestamp the tool cannot read is not judged against any target
+
+  ERROR    timestamps-out-of-order  examples/breaching/tickets.csv:10
+           ticket JD-209: first_response "3001-03-04T09:40:00+01:00" is before created "3001-03-04T10:00:00+01:00"
+           rule: a ticket with a first response, a resolution or a pause before its creation, a pause that ends before it starts, or a time after --as-of
+           basis: a timestamp carries Z or an offset from UTC, because a local time with no offset is read wrongly in most of the world (RFC 3339, Date and Time on the Internet: Timestamps, https://www.rfc-editor.org/rfc/rfc3339)
+           basis: an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target (Set up SLA goals (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/)
+           the tool's own choice: a ticket whose times cannot be in that order is not judged, rather than judged on times that are wrong; a time after --as-of means the export is newer than --as-of
+
+  ERROR    duplicate-ticket         examples/breaching/tickets.csv:11
+           ticket JD-202 was read before, at examples/breaching/tickets.csv:3; this copy is not judged
+           rule: a ticket with no id, or with an id that a ticket read before it already has, in the same file or in another
+           basis: each record is a line of fields separated by commas, every record has as many fields as the others, and a field that holds a comma, a quote or a line break is quoted with the quote doubled (RFC 4180, Common Format and MIME Type for Comma-Separated Values (CSV) Files, https://www.rfc-editor.org/rfc/rfc4180)
+           basis: when an object repeats a name the behaviour of the software that reads it cannot be predicted, so the readers of this tool refuse a repeated name (RFC 8259, The JSON Data Interchange Format, https://www.rfc-editor.org/rfc/rfc8259)
+           the tool's own choice: the first copy of a ticket is judged and every later copy is reported and left out, so a ticket is never counted twice in the summary
+
+  WARNING  resolution-at-risk       examples/breaching/tickets.csv:7
+           ticket JD-206 (normal) is not resolved yet: 20h of the 24h target used up to --as-of (83%), 4h left
+           rule: an open ticket that has used 80% or more of the resolution target of its priority by --as-of, and not more than all of it
+           basis: an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target (Set up SLA goals (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/)
+           basis: an SLO is a target value for a measured level of service, and an SLA is an agreement with users that says what happens when the objectives in it are missed (Service Level Objectives (Site Reliability Engineering, Google), https://sre.google/sre-book/service-level-objectives/)
+           the tool's own choice: the share of the target that makes a ticket at risk, 80% by default, is the tool's own choice and is set with warnAt
+
+  WARNING  first-response-at-risk   examples/breaching/tickets.csv:12
+           ticket JD-210 (high) has no first response yet: 55m of the 1h target used up to --as-of (91%), 5m left
+           rule: an open ticket with no first response that has used 80% or more of the firstResponse target of its priority by --as-of, and not more than all of it
+           basis: an SLA holds a time target for each goal, the goals can be grouped by priority, and a calendar sets the working hours in which time counts against the target (Set up SLA goals (Jira Service Management Cloud, Atlassian Support), https://support.atlassian.com/jira-service-management-cloud/docs/set-up-sla-goals/)
+           basis: an SLO is a target value for a measured level of service, and an SLA is an agreement with users that says what happens when the objectives in it are missed (Service Level Objectives (Site Reliability Engineering, Google), https://sre.google/sre-book/service-level-objectives/)
+           the tool's own choice: the share of the target that makes a ticket at risk, 80% by default, is the tool's own choice and is set with warnAt
+
+First response, in cover time
+
+  priority  target  tickets  met  missed  open  at risk  met share  median  p90
+  urgent    30m     2        1    1       0     0        50%        20m     55m
+  high      1h      4        1    2       1     1        33.3%      1h      1h 10m
+  normal    4h      3        3    0       0     0        100%       1h      3h 45m
+  low       8h      1        1    0       0     0        100%       1h      1h
+
+Resolution, in cover time
+
+  priority  target  tickets  met  missed  open  at risk  met share  median  p90
+  urgent    4h      2        2    0       0     0        100%       2h 30m  3h 30m
+  high      8h      4        1    1       2     0        50%        3h      10h 10m
+  normal    24h     3        2    0       1     1        100%       9h 30m  16h
+  low       40h     1        0    1       0     0        0%         -       -
+
+Read: examples/breaching
+
+  tickets  15: 11 resolved, 4 open; 5 not judged for an input problem
+  files    examples/breaching/phone.json (json, 3 tickets) and examples/breaching/tickets.csv (csv, 12 tickets)
+  paused   2 judged tickets with paused time
+
+This report measures the timestamps of the ticket export it was given against the SLA of the configuration. It does not connect to a help desk, read the clock or see changes made after the export; the time of an open ticket is counted up to --as-of, inside the cover calendar (docs/limits.md).
+
+RESULT: FAIL - 10 errors (and 2 warnings)

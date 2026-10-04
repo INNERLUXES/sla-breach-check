@@ -1,0 +1,14 @@
+{
+  "name": "Juniper Desk support SLA",
+  "priorities": {
+    "urgent": { "firstResponse": "30m", "resolution": "4h", "cover": "24x7", "aliases": ["P1"] },
+    "high": { "firstResponse": "1h", "resolution": "8h", "aliases": ["P2"] },
+    "normal": { "firstResponse": "4h", "resolution": "24h", "aliases": ["P3"] },
+    "low": { "firstResponse": "8h", "resolution": "40h", "aliases": ["P4"] }
+  },
+  "timezone": "+01:00",
+  "workingDays": ["mon", "tue", "wed", "thu", "fri"],
+  "workingHours": ["09:00-12:30", "13:30-17:30"],
+  "holidays": ["3001-03-05"],
+  "pausedStatuses": ["pending", "waiting on customer"]
+}

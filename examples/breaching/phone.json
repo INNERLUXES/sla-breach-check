@@ -1,0 +1,32 @@
+{
+  "tickets": [
+    {
+      "id": "JD-301",
+      "priority": "normal",
+      "created": "3001-03-02T09:30:00+01:00",
+      "first_response": "3001-03-02T10:00:00+01:00",
+      "resolved": "3001-03-06T17:00:00+01:00",
+      "history": [
+        { "at": "3001-03-02T10:00:00+01:00", "status": "open" },
+        { "at": "3001-03-02T11:00:00+01:00", "status": "Waiting on customer" },
+        { "at": "3001-03-04T09:00:00+01:00", "status": "open" }
+      ]
+    },
+    {
+      "id": "JD-302",
+      "priority": "high",
+      "created": "3001-03-03T12:00:00+01:00",
+      "first_response": "3001-03-03T14:10:00+01:00",
+      "resolved": "3001-03-03T16:00:00+01:00",
+      "history": []
+    },
+    {
+      "id": "JD-303",
+      "priority": "urgent",
+      "created": "3001-02-27T21:00:00+01:00",
+      "first_response": "3001-02-27T21:10:00+01:00",
+      "resolved": "3001-02-30T10:00:00+01:00",
+      "history": null
+    }
+  ]
+}

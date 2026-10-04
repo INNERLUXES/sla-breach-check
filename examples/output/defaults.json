@@ -1,0 +1,71 @@
+{
+  "name": "built-in defaults with sample priorities",
+  "priorities": {
+    "urgent": {
+      "firstResponse": "1h",
+      "resolution": "8h",
+      "cover": "24x7"
+    },
+    "high": {
+      "firstResponse": "2h",
+      "resolution": "16h"
+    },
+    "normal": {
+      "firstResponse": "4h",
+      "resolution": "40h"
+    },
+    "low": {
+      "firstResponse": "8h",
+      "resolution": "80h"
+    }
+  },
+  "timezone": "Z",
+  "workingDays": [
+    "mon",
+    "tue",
+    "wed",
+    "thu",
+    "fri"
+  ],
+  "workingHours": [
+    "09:00-17:00"
+  ],
+  "holidays": [],
+  "defaultOffset": null,
+  "fields": {
+    "id": "id",
+    "priority": "priority",
+    "created": "created",
+    "firstResponse": "first_response",
+    "resolved": "resolved",
+    "paused": "paused",
+    "history": "history"
+  },
+  "pausedStatuses": [
+    "pending",
+    "on hold",
+    "waiting on customer"
+  ],
+  "pausedClocks": [
+    "resolution"
+  ],
+  "warnAt": 80,
+  "files": [
+    "**/*.csv",
+    "**/*.json"
+  ],
+  "exclude": [],
+  "rules": {
+    "firstResponseMissed": "error",
+    "resolutionMissed": "error",
+    "firstResponseOverdue": "error",
+    "resolutionOverdue": "error",
+    "firstResponseAtRisk": "warning",
+    "resolutionAtRisk": "warning",
+    "invalidTimestamp": "error",
+    "timestampsOutOfOrder": "error",
+    "unknownPriority": "error",
+    "duplicateTicket": "error"
+  },
+  "minSeverity": "notice"
+}

@@ -1,0 +1,13 @@
+::error file=examples/breaching/phone.json,line=15,title=sla-breach-check first-response-missed::ticket JD-302 (high): the first response came after 1h 10m of cover time, 10m past the target of 1h
+::error file=examples/breaching/phone.json,line=23,title=sla-breach-check invalid-timestamp::ticket JD-303: resolved "3001-02-30T10:00:00+01:00" names a date that does not exist
+::error file=examples/breaching/tickets.csv,line=2,title=sla-breach-check first-response-missed::ticket JD-201 (urgent): the first response came after 55m of cover time, 25m past the target of 30m
+::error file=examples/breaching/tickets.csv,line=3,title=sla-breach-check resolution-missed::ticket JD-202 (high): resolved after 10h 10m of cover time, 2h 10m past the target of 8h
+::error file=examples/breaching/tickets.csv,line=5,title=sla-breach-check resolution-overdue::ticket JD-204 (low) is not resolved after 41h 30m of cover time up to --as-of, 1h 30m past the target of 40h
+::error file=examples/breaching/tickets.csv,line=6,title=sla-breach-check first-response-overdue::ticket JD-205 (high) has no first response after 1h 15m of cover time up to --as-of, 15m past the target of 1h
+::error file=examples/breaching/tickets.csv,line=8,title=sla-breach-check unknown-priority::ticket JD-207: priority "P5" is not a priority of the SLA, which names urgent, high, normal and low
+::error file=examples/breaching/tickets.csv,line=9,title=sla-breach-check invalid-timestamp::ticket JD-208: created "3001-03-04 10:20" has no offset; write Z or an offset such as +01:00 after the time, or set defaultOffset in the configuration
+::error file=examples/breaching/tickets.csv,line=10,title=sla-breach-check timestamps-out-of-order::ticket JD-209: first_response "3001-03-04T09:40:00+01:00" is before created "3001-03-04T10:00:00+01:00"
+::error file=examples/breaching/tickets.csv,line=11,title=sla-breach-check duplicate-ticket::ticket JD-202 was read before, at examples/breaching/tickets.csv:3; this copy is not judged
+::warning file=examples/breaching/tickets.csv,line=7,title=sla-breach-check resolution-at-risk::ticket JD-206 (normal) is not resolved yet: 20h of the 24h target used up to --as-of (83%25), 4h left
+::warning file=examples/breaching/tickets.csv,line=12,title=sla-breach-check first-response-at-risk::ticket JD-210 (high) has no first response yet: 55m of the 1h target used up to --as-of (91%25), 5m left
+sla-breach-check: examples/breaching: 15 tickets, 12 findings; RESULT: FAIL - 10 errors (and 2 warnings)

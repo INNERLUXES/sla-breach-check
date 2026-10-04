@@ -1,0 +1,50 @@
+{
+  "name": "sla-breach-check",
+  "version": "1.0.0",
+  "description": "Reads a support ticket export in CSV or JSON and the SLA of a configuration file (first response and resolution targets per priority, a cover calendar with time zone, working days, working hours and holidays, or 24x7 cover) and reports the targets that were missed, the open tickets past their target or close to it as of a given moment, the tickets it cannot judge, and for each priority the share met with the median and 90th percentile. Counts time inside the cover hours without paused time, reads no clock, text, JSON and GitHub annotation output, exit codes for a pipeline, no dependencies.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "sla-breach-check": "bin/sla-breach-check.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "docs",
+    "examples",
+    "research",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "test:coverage": "node --test --experimental-test-coverage \"test/*.test.js\"",
+    "check": "node tools/check.mjs",
+    "example": "node tools/example.mjs"
+  },
+  "keywords": [
+    "sla",
+    "slo",
+    "support",
+    "help-desk",
+    "itsm",
+    "incident-management",
+    "business-hours",
+    "linter",
+    "ci",
+    "cli"
+  ],
+  "author": "INNERLUXES <info@innerluxes.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/INNERLUXES/sla-breach-check.git"
+  },
+  "homepage": "https://innerluxes.dev/software-development/maintenance-and-support"
+}
